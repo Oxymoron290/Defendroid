@@ -2,6 +2,7 @@
     <head>
         <style>
             body{
+                color:#ffffff;
                 background-color:black;
             }
             .playarea
@@ -19,6 +20,7 @@
         <script src="entities\Swarmer.js"></script>
     </head>
     <body onkeydown="keyDown(event)" onkeyup="keyUp(event)">
+        <p id="c"></p>
     </body>
     <canvas id="graphics" class="playarea" width=800 height=640></canvas>
     <script>
@@ -82,6 +84,16 @@
             if(reverse){
                 player.flip();
                 reverse = false;
+            }
+
+            
+            var par = document.getElementById("c");
+            if(player.isColliding(lander)){
+                par.innerHTML = "colliding";
+                player.Velocity_Y = 0;
+                player.Velocity_X = 0;
+            }else{
+                par.innerHTML = "";
             }
 
             // logic

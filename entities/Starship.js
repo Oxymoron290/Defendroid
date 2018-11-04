@@ -15,6 +15,15 @@ function Starship(x, y, scale, speed) {
     this.Velocity_X = 0;
     this.Velocity_Y = 0;
 
+    this.isColliding = function(obj){
+        if(this.X > obj.X + (obj.Model.width * obj.Scale)) return false;
+        if(this.X + (this.Model.width * this.Scale) < obj.X) return false;
+
+        if(this.Y > obj.Y + (obj.Model.height * obj.Scale)) return false;
+        if(this.Y + (this.Model.height * this.scale) < obj.Y)return false;
+        return true;
+    }
+
     this.flip = function(){ // TODO: make private and handle internally.
         this.FaceDirection = !this.FaceDirection;
         
