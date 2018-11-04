@@ -16,6 +16,7 @@ function Starship(x, y, scale, speed) {
     this.Velocity_Y = 0;
 
     this.isColliding = function(obj){
+        // TODO: omit flame from engines - will require all entities to have a bounding box.
         if(this.X > obj.X + (obj.Model.width * obj.Scale)) return false;
         if(this.X + (this.Model.width * this.Scale) < obj.X) return false;
 
@@ -24,7 +25,9 @@ function Starship(x, y, scale, speed) {
         return true;
     }
 
-    this.flip = function(){ // TODO: make private and handle internally.
+    this.flip = function(){
+        // TODO: make private and handle internally.
+        // TODO: try holding space. I dont like that. only one flip per keyDown event.
         this.FaceDirection = !this.FaceDirection;
         
         if(this.FaceDirection){ this.X += 7*this.Scale; }else{ this.X -= 7*this.Scale; }
