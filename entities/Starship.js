@@ -1,14 +1,13 @@
 function Starship(x, y, scale, speed) {
     this.Model = Sprite();
-    this.activeSprite = Model.resting;
+    this.activeSprite = this.Model.resting;
     this.Sprite = new DataPixels(this.activeSprite, scale).image;
     this.X = x;
     this.Y = y;
-
-    this.FaceDirection = direction.Right;
-
     this.Scale = scale;
     this.Speed = speed;
+
+    this.FaceDirection = direction.Right;
 
     this.Previous_X;
     this.Previous_Y;
@@ -16,7 +15,7 @@ function Starship(x, y, scale, speed) {
     this.Velocity_X = 0;
     this.Velocity_Y = 0;
 
-    this.flip = function(){
+    this.flip = function(){ // TODO: make private and handle internally.
         this.FaceDirection = !this.FaceDirection;
         
         if(this.FaceDirection){ this.X += 7*this.Scale; }else{ this.X -= 7*this.Scale; }
@@ -38,7 +37,7 @@ function Starship(x, y, scale, speed) {
         const f2 = "243, 48, 48";
         const f3 = "243, 113, 48";
         const f4 = "243, 178, 113";
-        const f5 = "243, 243, 178"
+        const f5 = "243, 243, 178";
     
         return {
             "width":36,

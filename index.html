@@ -4,13 +4,19 @@
             body{
                 background-color:black;
             }
-        .playarea
-        {
-            background-color:#343434;
-        }
+            .playarea
+            {
+                background-color:#343434;
+            }
         </style>
         <script src="node_modules\data-pixels\DataPixels.js"></script>
-        <script src="Starship.js"></script>
+        <script src="entities\Starship.js"></script>
+        <script src="entities\Lander.js"></script>
+        <script src="entities\Mutant.js"></script>
+        <script src="entities\Baiter.js"></script>
+        <script src="entities\Bomber.js"></script>
+        <script src="entities\Pod.js"></script>
+        <script src="entities\Swarmer.js"></script>
     </head>
     <body onkeydown="keyDown(event)" onkeyup="keyUp(event)">
     </body>
@@ -23,6 +29,7 @@
         var graphics = gameCanvas.getContext('2d');
 
         var player = new Starship(100, 100, scale, speed);
+        var lander = new Lander(500, 100, scale, speed);
 
         var isLeft = false;
         var isRight = false;
@@ -87,6 +94,7 @@
             //rendering
             graphics.clearRect(0,0, gameCanvas.width, gameCanvas.height);
             graphics.drawImage(player.Sprite, player.X, player.Y);
+            graphics.drawImage(lander.Sprite, lander.X, player.Y);
             setTimeout(MainLoop, 1000/60);
         }());
     </script>
