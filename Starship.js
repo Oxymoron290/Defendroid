@@ -1,8 +1,11 @@
 function Starship(x, y, scale, speed) {
-    //this.Sprite = new Image();
-    this.Sprite = new DataPixels(Sprite().resting, scale).image;
+    this.Model = Sprite();
+    this.activeSprite = Model.resting;
+    this.Sprite = new DataPixels(this.activeSprite, scale).image;
     this.X = x;
     this.Y = y;
+
+    this.FaceDirection = direction.Right;
 
     this.Scale = scale;
     this.Speed = speed;
@@ -12,6 +15,17 @@ function Starship(x, y, scale, speed) {
 
     this.Velocity_X = 0;
     this.Velocity_Y = 0;
+
+    this.flip = function(){
+        this.FaceDirection = !this.FaceDirection;
+        
+        if(this.FaceDirection){ this.X += 7*this.Scale; }else{ this.X -= 7*this.Scale; }
+
+        this.activeSprite.forEach(function(element){
+            element.reverse();
+        });
+        this.Sprite = new DataPixels(this.activeSprite, this.Scale).image;
+    }
 
     function Sprite() {
         const _ = "0, 0, 0, 0";

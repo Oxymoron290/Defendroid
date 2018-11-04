@@ -9,13 +9,14 @@
             background-color:#343434;
         }
         </style>
-        <script src="D:\Defendroid2019\node_modules\data-pixels\DataPixels.js"></script>
+        <script src="node_modules\data-pixels\DataPixels.js"></script>
         <script src="Starship.js"></script>
     </head>
     <body onkeydown="keyDown(event)" onkeyup="keyUp(event)">
     </body>
     <canvas id="graphics" class="playarea" width=800 height=640></canvas>
     <script>
+        var direction = Object.freeze({"Left":true, "Right":false});
         var scale = 3;
         var speed = 5;
         var gameCanvas = document.getElementById("graphics");
@@ -25,9 +26,14 @@
 
         var isLeft = false;
         var isRight = false;
+        var reverse = false;
 
         // Event
         function keyDown(e){
+            if (e.keyCode == '32') {
+                // space bar
+                reverse = true;
+            }
             if (e.keyCode == '38') {
                 // up arrow
             }
@@ -66,6 +72,10 @@
             // pre adjustments
             player.X += player.Velocity_X;
             player.Y += player.Velocity_Y;
+            if(reverse){
+                player.flip();
+                reverse = false;
+            }
 
             // logic
             if(isLeft) player.Velocity_X = -Math.abs(player.Speed);
