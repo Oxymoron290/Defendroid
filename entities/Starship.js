@@ -6,6 +6,7 @@ function Starship(x, y, scale, speed) {
     this.Y = y;
     this.Scale = scale;
     this.Speed = speed;
+    this.Lives = 3;
 
     this.Previous_X;
     this.Previous_Y;
@@ -16,16 +17,6 @@ function Starship(x, y, scale, speed) {
     var accelleration = .2;
     var inertia = -.02;
     var maxSpeed = 10;
-
-    var firing = false;
-    var fired = false;
-    var reversing = false;
-    var reversed = false;
-    var hyperspacing = false;
-    var hyperspaced = false;
-    var thrusting = false;
-    var goingUp = false;
-    var goingDown = false;
 
     this.Control = function(fn, isOn){
         if(fn == "fire"){
@@ -53,6 +44,14 @@ function Starship(x, y, scale, speed) {
     }
 
     this.Logic = function(){
+        if(dieing){
+            this._die();
+            return;
+        }
+        if(respawning){
+            this._respawn();
+            return;
+        }
         if(firing && !fired){
             fired = true;
             this._fire();
@@ -72,14 +71,23 @@ function Starship(x, y, scale, speed) {
         //if(isLeft) player.Velocity_X = -Math.abs(player.Speed);
         //if(isRight) player.Velocity_X = Math.abs(player.Speed);
         //if(!isLeft && !isRight) player.Velocity_X = 0;
-        
-        this._orientate();
-        this.Sprite = new DataPixels(this.activeSprite.sprite, this.Scale).image;
     }
 
     this.PostUpdate = function(){
+        this._orientate();
         //console.log("Thrusting:" + thrusting + " Model: " + this.Model.facingLeft + " activeSprite: " + this.activeSprite.facingLeft + " X: " + this.X + " Y:" + this.Y);
         //console.log("Left: " + this.Model.headingLeft + " Velocity X: " + this.Velocity_X);
+    }
+
+    this.Render = function(graphics){
+        this.Sprite = new DataPixels(this.activeSprite.sprite, this.Scale).image;
+        
+        graphics.drawImage(this.Sprite, this.X, this.Y);
+    }
+
+    this.Kill = function(){
+        dieing = true;
+        flashing = 70;
     }
 
     this.isColliding = function(obj){
@@ -92,12 +100,60 @@ function Starship(x, y, scale, speed) {
         return true;
     }
 
+    var firing = false;
+    var fired = false;
+    var reversing = false;
+    var reversed = false;
+    var hyperspacing = false;
+    var hyperspaced = false;
+    var thrusting = false;
+    var goingUp = false;
+    var goingDown = false;
+    
+    var respawning = true;
+    var dieing = false;
+    var flashing = 0; // ms to flash
+    var exploading = 0; // ms to animate explosion
+
+    this._die = function(){
+        if(!dieing) return;
+        if(flashing > 0){
+            flashing--;
+            var splitter = Math.round(flashing/13);
+            console.log("Flashing " + flashing + " splitter: " + splitter + " modulus: " + splitter%2);
+            if(splitter%2 == 0){
+                this.activeSprite = this.Model.dieing2;
+            }else{
+                this.activeSprite = this.Model.dieing1;
+            }
+            return;
+        }
+        if(exploading > 0){
+            // then the ship actually explodes.
+            return;
+        }
+
+        // then we will reset for the next death.
+        this.Lives--;
+        dieing = false;
+        respawning = true;
+    }
+
+    this._respawn = function(){
+        if(!respawning) return;
+
+        // respawn vehicle
+
+        this.Velocity_X = 0;
+        this.Velocity_Y = 0;
+        respawning = false;
+    }
+
     this._fire = function (){
         console.log("Boom! ");
     }
 
     this._reverse = function (){
-        console.log("flip");
         this.Model.facingLeft = !this.Model.facingLeft;
         this.Model.offset = false;
     }
@@ -201,6 +257,7 @@ function Starship(x, y, scale, speed) {
     
     function Sprite() {
         const _ = "0, 0, 0, 0";
+        const q = "255, 255, 255";
         const w = "243, 243, 243";
         const m = "227, 32, 227";
         const g = "32, 227, 32";
@@ -243,6 +300,34 @@ function Starship(x, y, scale, speed) {
                     [ _, f2, f2, f3, f3, f4, f4, f5, f5, f5, f5, f5,  w, w, w, m, m, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, y],
                     [ _,  _,  _, f2, f2, f3, f3, f4, f4, f5, f5, f4, f1, w, w, m, m, m, m, m, m, w, w, w, w, w, w, w, w, w, w, w, w, w, _, _],
                     [ _,  _,  _,  _,  _,  _, f2, f3, f3, f3, f4,  _,  _, _, w, m, m, m, m, w, w, w, w, w, _, _, _, _, _, _, _, _, _, _, _, _]
+                ]
+            },
+            "dieing1":{
+                "facingLeft": false,
+                "sprite":
+                [
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, _, _, w, w, w, w, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, _, w, w, w, w, w, w, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, w, w, w, w, w, w, w, w, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, f1,  w, w, w, w, w, w, w, w, w, w, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  w,  w, w, w, w, w, w, w, w, w, w, w, w, w, w, g, g, b, b, y, y, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  w,  w, w, m, m, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, y],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, f1,  w, w, m, m, m, m, m, m, w, w, w, w, w, w, w, w, w, w, w, w, w, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, w, m, m, m, m, w, w, w, w, w, _, _, _, _, _, _, _, _, _, _, _, _]
+                ]
+            },
+            "dieing2":{
+                "facingLeft": false,
+                "sprite":
+                [
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, _, _, q, q, q, q, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, _, q, q, q, q, q, q, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, q, q, q, q, q, q, q, q, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  q,  q, q, q, q, q, q, q, q, q, q, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  q,  q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, _, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  q,  q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  q,  q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, q, _, _],
+                    [ _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _,  _, q, q, q, q, q, q, q, q, q, q, _, _, _, _, _, _, _, _, _, _, _, _]
                 ]
             }
         };

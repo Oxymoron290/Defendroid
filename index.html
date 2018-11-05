@@ -21,6 +21,9 @@
     </head>
     <body onkeydown="keyDown(event)" onkeyup="keyUp(event)">
         <p id="c"></p>
+        <div>
+            <button onclick="player.Kill()"> Kill Player </button>
+        </div>
     </body>
     <canvas id="graphics" class="playarea" width=800 height=640></canvas>
     <script>
@@ -85,13 +88,14 @@
 
             // logic
             player.Logic();
+            // TODO: check player.Lives;
 
             // post adjustments
             player.PostUpdate();
 
             //rendering
             graphics.clearRect(0,0, gameCanvas.width, gameCanvas.height);
-            graphics.drawImage(player.Sprite, player.X, player.Y);
+            player.Render(graphics);
             graphics.drawImage(lander.Sprite, lander.X, lander.Y);
             setTimeout(MainLoop, 1000/60);
         }());
