@@ -24,7 +24,7 @@
     </body>
     <canvas id="graphics" class="playarea" width=800 height=640></canvas>
     <script>
-        var direction = Object.freeze({"Left":true, "Right":false});
+        //var direction = Object.freeze({"Left":true, "Right":false});
         var scale = 3;
         var speed = 5;
         var gameCanvas = document.getElementById("graphics");
@@ -33,80 +33,66 @@
         var player = new Starship(100, 100, scale, speed);
         var lander = new Lander(500, 100, scale, speed);
 
-        var isLeft = false;
-        var isRight = false;
-        var reverse = false;
-
         // Event
         function keyDown(e){
-            if (e.keyCode == '32') {
-                // space bar
-                reverse = true;
-            }
-            if (e.keyCode == '38') {
-                // up arrow
-            }
-            if (e.keyCode == '40') {
-                // down arrow
-            }
-            if (e.keyCode == '37') {
-                // left arrow
-                isLeft = true;
-            }
-            if (e.keyCode == '39') {
-                // right arrow
-                isRight = true;
-            }
+            var control = "";
+            // enter
+            if (e.keyCode == '13') control = "fire";
+            // shift
+            if (e.keyCode == '16') control = "hyperspace";
+            // ctrl
+            if (e.keyCode == '17') control = "reverse";
+            // space bar
+            if (e.keyCode == '32') control = "thrust";
+            // up arrow
+            if (e.keyCode == '38') control = "up";
+            // down arrow
+            if (e.keyCode == '40') control = "down";
+            // left arrow
+            //if (e.keyCode == '37') isLeft = true;
+            // right arrow
+            //if (e.keyCode == '39') isRight = true;
+            
+            player.Control(control, true);
         }
 
         function keyUp(e){
-            if (e.keyCode == '38') {
-                // up arrow
-            }
-            if (e.keyCode == '40') {
-                // down arrow
-            }
-            if (e.keyCode == '37') {
-                // left arrow
-                isLeft = false;
-            }
-            if (e.keyCode == '39') {
-                // right arrow
-                isRight = false;
-            }
+            var control = "";
+            // enter
+            if (e.keyCode == '13') control = "fire";
+            // shift
+            if (e.keyCode == '16') control = "hyperspace";
+            // ctrl
+            if (e.keyCode == '17') control = "reverse";
+            // space bar
+            if (e.keyCode == '32') control = "thrust";
+            // up arrow 
+            if (e.keyCode == '38') control = "up";
+            // down arrow
+            if (e.keyCode == '40') control = "down";
+            // left arrow
+            //if (e.keyCode == '37') isLeft = false;
+            // right arrow
+            //if (e.keyCode == '39') isRight = false;
+            
+            player.Control(control, false);
         }
 
         // Main Loop
         (function MainLoop() {
             // pre adjustments
-            player.X += player.Velocity_X;
-            player.Y += player.Velocity_Y;
-            if(reverse){
-                player.flip();
-                reverse = false;
-            }
-
-            
-            var par = document.getElementById("c");
-            if(player.isColliding(lander)){
-                par.innerHTML = "colliding";
-                player.Velocity_Y = 0;
-                player.Velocity_X = 0;
-            }else{
-                par.innerHTML = "";
-            }
+            player.PreUpdate();
 
             // logic
-            if(isLeft) player.Velocity_X = -Math.abs(player.Speed);
-            if(isRight) player.Velocity_X = Math.abs(player.Speed);
-            if(!isLeft && !isRight) player.Velocity_X = 0;
+            player.Logic();
 
             // post adjustments
+            player.PostUpdate();
 
             //rendering
             graphics.clearRect(0,0, gameCanvas.width, gameCanvas.height);
             graphics.drawImage(player.Sprite, player.X, player.Y);
-            graphics.drawImage(lander.Sprite, lander.X, player.Y);
+            graphics.drawImage(lander.Sprite, lander.X, lander.Y);
             setTimeout(MainLoop, 1000/60);
         }());
     </script>
